@@ -20,13 +20,13 @@ async def carts(request: Request, page: int = Query(default=1, ge=1), limit: int
 
 
 # Get Cart By Id
-@router.get("/product/{cart_id}", status_code=status.HTTP_200_OK)
+@router.get("/{cart_id}", status_code=status.HTTP_200_OK)
 @limiter.limit("10/minute")
 async def cart(request: Request, cart_id: str, user: dict = Depends(get_current_user)):
   pass
 
 # Update Cart Only Quantity Is Mutable
-@router.put("/product/{cart_id}", status_code=status.HTTP_200_OK)
+@router.put("/{cart_id}", status_code=status.HTTP_200_OK)
 @limiter.limit("10/minute")
 async def update_cart(request: Request, cart_id: str, user: dict = Depends(get_current_user)):
   pass
