@@ -6,6 +6,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
 from app.routes.cart import router as cart_router
 from app.routes.orders import router as order_router
+from app.redis import shared_redis
 
 
 
@@ -15,8 +16,8 @@ async def lifespan(app: FastAPI):
   await client.admin.command("ping")
   print("✅ MongoDB connected")
   
-  # await shared_redis.ping()       # ← add karo
-  # print("✅ Redis connected")
+  await shared_redis.ping()       # ← add karo
+  print("✅ Redis connected")
 
   # Indexes
   # await categories_collection.create_index("slug", unique=True)
