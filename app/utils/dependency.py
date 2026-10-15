@@ -29,6 +29,7 @@ async def get_current_user(
         detail="Invalid or expired token",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    
 
     try:
         payload = pyjwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 from app.utils.limiter import limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
+from app.routes.cart import router as cart_router
+from app.routes.orders import router as order_router
 
 
 
@@ -42,6 +44,8 @@ app.add_exception_handler(
 )
 
 # Add Routes Here
+app.include_router(cart_router)
+app.include_router(order_router)
 
 
 
