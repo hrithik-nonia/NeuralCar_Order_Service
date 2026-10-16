@@ -7,6 +7,7 @@ from slowapi import _rate_limit_exceeded_handler
 from app.routes.cart import router as cart_router
 from app.routes.orders import router as order_router
 from app.redis import shared_redis
+from app.database import order_collection
 
 
 
@@ -20,8 +21,11 @@ async def lifespan(app: FastAPI):
   print("✅ Redis connected")
 
   # Indexes
-  # await categories_collection.create_index("slug", unique=True)
-  # print("✅ Indexes created")
+  await order_collection.create_index("order_id", unique=True)
+  await order_collection.create_index("user_id")
+  await order_collection.create_index([("user_id", 1), ("status", 1)])
+  await order_collection.create_index([("user_id", 1), ("created_at", -1)])
+  print("✅ Indexes created")
 
   yield
 
