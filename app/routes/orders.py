@@ -8,6 +8,7 @@ from app.database import order_collection
 from app.utils.helper_functions import generate_order_id
 from datetime import datetime, timezone
 import json
+from app.utils.kafka_producer import publish_event
 
 router = APIRouter(prefix="/Order", tags=["Order APIs"])
 
@@ -64,6 +65,17 @@ async def add_order(
 
   # 5. DB mein save karo
   await order_collection.insert_one(order)
+  
+  # ← Yahan add karo
+  await publish_event(
+    "neuralmcart.order.placed",
+    {
+        "order_id": order_id,
+        "user_id": user_id,
+        "items": order["product"],
+        "total": total_price
+    }
+  )
   
   # Redis ke liye _id hata do
   order_for_cache = {k: v for k, v in order.items() if k != "_id"}
@@ -273,6 +285,14 @@ async def update_order(
           7 * 24 * 60 * 60,
           json.dumps(order_cache)
       )
+      
+  await publish_event(
+    "neuralmcart.order.cancelled",
+    {
+        "order_id": order_id,
+        "user_id": user_id
+    }
+  )
 
   return {"message": "Order cancel ho gaya", "order_id": order_id}
 

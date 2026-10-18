@@ -8,6 +8,8 @@ from app.routes.cart import router as cart_router
 from app.routes.orders import router as order_router
 from app.redis import shared_redis
 from app.database import order_collection
+from app.utils.kafka_producer import get_producer, stop_producer
+import asyncio
 
 
 
@@ -19,6 +21,11 @@ async def lifespan(app: FastAPI):
   
   await shared_redis.ping()       # ← add karo
   print("✅ Redis connected")
+  
+  # Kafka Producer
+  await get_producer()
+  print("✅ Kafka producer started")
+  
 
   # Indexes
   await order_collection.create_index("order_id", unique=True)
@@ -30,6 +37,8 @@ async def lifespan(app: FastAPI):
   yield
 
   client.close()
+  await shared_redis.close()
+  await stop_producer()
   print("🔴 MongoDB disconnected")
 
 
